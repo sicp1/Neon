@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
+</script>
+    <script src="https://cdn.staticfile.org/Chart.js/3.9.1/chart.js"></script>
+    <style>
+    .card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+
+  margin-top:10px;
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+}
+
+.card-content {
+  padding: 20px;
+
+}
+
+.card-content h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.contextHTML  {
+  margin: 10px 0;
+
+
+}
+
+        .main{
+        margin-left:300px;
+        margin-right:300px;
+        margin-bottom:30px;
+        margin-top:30px;
+        flex-direction:column;
+
+        }
+        .DIV{
+
+        display:flex;
+
+        }
+    </style>
+    <title>Neon</title>
+
+</head>
+<body>
+<div class="DIV">
+    <div class="main">
+
+    </div>
+
+</div>
+<script>
+    let ws = new WebSocket('ws://localhost:8888')
+    ws.onmessage=function(e){
+    console.log("html:",e.data);
+    ResJSON=JSON.parse(e.data)
+    if(ResJSON.type==0){
+    $(".main").append(ResJSON.context);
+
+    }
+    else if (ResJSON.type==1){
+    y=ResJSON.other
+    $("#"+y).html(ResJSON.context);
+
+    }
+    else if(ResJSON.type==2){
+    y=ResJSON.other
+    $("#"+y).html(ResJSON.context);
+    }else if(ResJSON.type==3){
+    alert("下载成功")
+    }
+
+    }
+function mysqlDownloadExcel(FuncName,table,Y){
+message={
+        "type":3,
+        "context":FuncName+"("+"'"+table+"'"+")",
+        "other":""
+    }
+    ws.send(JSON.stringify(message))
+
+
+}
+function mysqlForLimit(FuncName,XArr,Y){
+
+message={
+        "type":2,
+        "context":FuncName+"("+"'"+XArr[0]+"'"+","+XArr[1]+")",
+        "other":Y
+    }
+
+ws.send(JSON.stringify(message))
+
+}
+function CallBack(FuncName,XArr,Y){
+var XArr_true=[]
+for (var item in XArr){
+XArr_true.push($("#"+XArr[item]).val());
+
+}
+
+message={
+        "type":1,
+        "context":FuncName+"("+XArr_true.join()+")",
+        "other":Y
+    }
+
+
+ws.send(JSON.stringify(message))
+}
+</script>
+</body>
+</html>
